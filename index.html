@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexiLoop - Dyslexia-Friendly Notes Assistant</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #5d4e37;
+            background: #f5f1e8;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            font-weight: 400;
+        }
+        
+        .container {
+            width: 100%;
+            margin: 0;
+            background: #f5f1e8;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #8b7355 0%, #a0522d 100%);
+            color: #faf8f3;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 3px solid #5d4e37;
+        }
+        
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.01em;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+        }
+        
+        .main-content {
+            padding: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .upload-section {
+            background: #f5f1e8;
+            border-radius: 15px;
+            padding: 35px 30px 60px 30px;
+            margin-bottom: 60px;
+            border: 3px dashed #8b7355;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(93, 78, 55, 0.1);
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        
+        .upload-section h2 {
+            color: #5d4e37;
+            margin-bottom: 20px;
+            font-size: 2.2em;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        
+        .dyslexia-quote {
+            background: linear-gradient(135deg, rgba(139, 115, 85, 0.1) 0%, rgba(160, 82, 45, 0.1) 100%);
+            border-left: 4px solid #8b7355;
+            padding: 18px 22px;
+            margin: 12px 0 18px 0;
+            border-radius: 15px;
+            text-align: left;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(93, 78, 55, 0.1);
+        }
+        
+        .quote-icon {
+            font-size: 2em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .dyslexia-quote blockquote {
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: #5d4e37;
+            font-style: italic;
+            margin: 0 0 15px 0;
+            font-weight: 500;
+        }
+        
+        .quote-author {
+            color: #7a6b5a;
+            font-size: 0.95em;
+            font-weight: 600;
+            text-align: right;
+            margin: 0;
+            font-style: italic;
+        }
+        
+        .upload-instruction {
+            color: #5d4e37;
+            font-size: 1.1em;
+            margin: 12px 0 18px 0;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input-wrapper:hover .file-input-label {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(93, 78, 55, 0.5);
+            background: linear-gradient(135deg, #a0522d 0%, #8b4513 100%);
+        }
+        
+        .file-tooltip {
+            font-size: 0.9em;
+            color: #7a6b5a;
+            margin-top: 8px;
+            font-style: italic;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .file-tooltip.show {
+            opacity: 1;
+        }
+        
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-input-label {
+            display: inline-block;
+            padding: 22px 45px;
+            background: linear-gradient(135deg, #8b7355 0%, #a0522d 100%);
+            color: #faf8f3;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 500;
+            transition: all 0.5s ease;
+            box-shadow: 0 5px 15px rgba(93, 78, 55, 0.3);
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.02em;
+        }
+        
+        .file-input-label:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(93, 78, 55, 0.5);
+            background: linear-gradient(135deg, #a0522d 0%, #8b4513 100%);
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #a0522d 0%, #8b4513 100%);
+            color: #faf8f3;
+            border: none;
+            padding: 22px 50px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            box-shadow: 0 5px 15px rgba(93, 78, 55, 0.3);
+            margin-top: 40px;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            display: none;
+            letter-spacing: 0.02em;
+        }
+        
+        .submit-btn.active {
+            opacity: 1;
+            cursor: pointer;
+            display: inline-block;
+            transform: translateY(0);
+        }
+        
+        .submit-btn.active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(93, 78, 55, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0;
+            cursor: not-allowed;
+            transform: translateY(20px);
+            background: linear-gradient(135deg, #8b7355 0%, #6b4423 100%);
+            display: none;
+        }
+        
+        #loader {
+            display: none;
+            background: #f0e6d2;
+            color: #5d4e37;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            font-weight: 600;
+            border-left: 5px solid #8b7355;
+        }
+        
+        .history-section {
+            margin-top: 40px;
+        }
+        
+        .history-section h2 {
+            color: #5d4e37;
+            margin-bottom: 25px;
+            font-size: 2em;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        
+        .history-item {
+            background: #faf8f3;
+            border: 2px solid #e8dcc0;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(93, 78, 55, 0.1);
+        }
+        
+        .history-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(93, 78, 55, 0.2);
+            border-color: #8b7355;
+        }
+        
+        .history-item h3 {
+            color: #5d4e37;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        
+        .history-item p {
+            color: #7a6b5a;
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+        
+        .history-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .history-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            letter-spacing: 0.01em;
+        }
+        
+        .btn-view {
+            background: #8b7355;
+            color: #faf8f3;
+        }
+        
+        .btn-download {
+            background: #a0522d;
+            color: #faf8f3;
+        }
+        
+        .btn-audio {
+            background: #d2691e;
+            color: #faf8f3;
+        }
+        
+        .history-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .clear-history-btn {
+            background: #8b4513;
+            color: #faf8f3;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+        }
+        
+        .clear-history-btn:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+        
+        .features {
+            background: #f5f1e8;
+            border-radius: 15px;
+            padding: 40px;
+            margin-top: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 20px rgba(93, 78, 55, 0.1);
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+        
+        .features.reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .features h2 {
+            color: #5d4e37;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 2em;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .feature-item {
+            background: linear-gradient(135deg, #faf8f3 0%, #f5f1e8 100%);
+            padding: 35px 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(93, 78, 55, 0.15);
+            border: 2px solid #e8dcc0;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #8b7355, #a0522d, #d2691e);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        
+        .feature-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(93, 78, 55, 0.25);
+            border-color: #8b7355;
+        }
+        
+        .feature-item:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .feature-item h3 {
+            color: #5d4e37;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature-item p {
+            color: #7a6b5a;
+            font-size: 1.05em;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            display: block;
+            background: linear-gradient(135deg, #8b7355, #a0522d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .history-actions {
+                flex-direction: column;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .feature-item {
+                padding: 25px 20px;
+            }
+            
+            .feature-icon {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>LexiLoop</h1>
+            <p>Dyslexia-Friendly Notes Assistant - Upload your handwritten notes and get dyslexia-friendly corrections with audio support</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="upload-section">
+                <h2>📤 Upload Your Notes</h2>
+                
+                <div class="dyslexia-quote">
+                    <div class="quote-icon">💫</div>
+                    <blockquote>
+                        "Your brain is not broken. It's beautifully different. Every challenge you face with reading and writing is a testament to your incredible ability to think differently and solve problems in ways others can't even imagine."
+                    </blockquote>
+                    <p class="quote-author">- Embracing Neurodiversity</p>
+                </div>
+                
+                <p class="upload-instruction">Select an image of your handwritten notes to get started</p>
+                
+                <form method="POST" enctype="multipart/form-data" onsubmit="showLoader()">
+                    <div class="file-input-wrapper">
+                        <input type="file" name="note_image" accept="image/*" required class="file-input" id="fileInput">
+                        <label for="fileInput" class="file-input-label">
+                            📁 Choose Image File
+                        </label>
+                        <div id="fileTooltip" class="file-tooltip">
+                            Click to select your handwritten notes image
+                        </div>
+                    </div>
+                    
+                    <div id="selectedFile" style="margin: 15px 0; font-weight: 600; color: #2c3e50;"></div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                        🚀 Process Notes
+                    </button>
+                </form>
+                
+                <div id="loader">
+                    <p>🔄 Processing your notes... Please wait ⏳</p>
+                    <p>This may take a few moments as we extract text, correct grammar, and generate audio.</p>
+                </div>
+            </div>
+            
+            <div class="features">
+                <h2>✨ Features</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <span class="feature-icon">🔍</span>
+                        <h3>Text Extraction</h3>
+                        <p>Extract text from handwritten notes using advanced OCR technology with high accuracy and speed</p>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✏️</span>
+                        <h3>Grammar Correction</h3>
+                        <p>Automatically correct grammar errors with context-aware AI-powered explanations</p>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🎧</span>
+                        <h3>Audio Support</h3>
+                        <p>Listen to corrected text with high-quality text-to-speech for better comprehension</p>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📄</span>
+                        <h3>PDF Generation</h3>
+                        <p>Download dyslexia-friendly PDFs with OpenDyslexic font and color-coded highlights</p>
+                    </div>
+                </div>
+            </div>
+            
+            {% if history %}
+            <div class="history-section">
+                <h2>📚 Your Recent Notes</h2>
+                {% for item in history %}
+                <div class="history-item">
+                    <h3>{{ item.filename }}</h3>
+                    <p><strong>Date:</strong> {{ item.timestamp.split('T')[0] if item.timestamp else 'Unknown' }}</p>
+                    <p><strong>Original:</strong> {{ item.original_text[:100] }}{% if item.original_text|length > 100 %}...{% endif %}</p>
+                    <p><strong>Corrected:</strong> {{ item.corrected_text[:100] }}{% if item.corrected_text|length > 100 %}...{% endif %}</p>
+                    
+                    <div class="history-actions">
+                        <a href="/process/{{ item.filename }}" class="history-btn btn-view">👁️ View Details</a>
+                        {% if item.pdf_file %}
+                        <a href="/download_pdf/{{ item.pdf_file }}" class="history-btn btn-download">📄 Download PDF</a>
+                        {% endif %}
+                        {% if item.audio_file %}
+                        <a href="/download_audio/{{ item.audio_file }}" class="history-btn btn-audio">🎵 Download Audio</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div style="text-align: center;">
+                    <a href="/clear_history" class="clear-history-btn" onclick="return confirm('Are you sure you want to clear your history?')">
+                        🗑️ Clear History
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').classList.remove('active');
+            document.getElementById('submitBtn').textContent = 'Processing...';
+        }
+        
+        // Show selected filename and activate submit button
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name;
+            const selectedFileDiv = document.getElementById('selectedFile');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (fileName) {
+                selectedFileDiv.textContent = 'Selected: ' + fileName;
+                selectedFileDiv.style.color = '#28a745';
+                
+                // Show and activate submit button
+                submitBtn.disabled = false;
+                submitBtn.classList.add('active');
+                submitBtn.textContent = '🚀 Process Notes';
+            } else {
+                selectedFileDiv.textContent = '';
+                
+                // Hide submit button
+                submitBtn.disabled = true;
+                submitBtn.classList.remove('active');
+                submitBtn.textContent = '🚀 Process Notes';
+            }
+        });
+        
+        // Delayed tooltip for file input button
+        let tooltipTimer;
+        const fileInputWrapper = document.querySelector('.file-input-wrapper');
+        const fileTooltip = document.getElementById('fileTooltip');
+        
+        fileInputWrapper.addEventListener('mouseenter', function() {
+            tooltipTimer = setTimeout(function() {
+                fileTooltip.classList.add('show');
+            }, 3000); // 3 seconds delay
+        });
+        
+        fileInputWrapper.addEventListener('mouseleave', function() {
+            clearTimeout(tooltipTimer);
+            fileTooltip.classList.remove('show');
+        });
+        
+        // Scroll reveal animation for features section
+        function revealOnScroll() {
+            const featuresSection = document.querySelector('.features');
+            const windowHeight = window.innerHeight;
+            const featuresTop = featuresSection.getBoundingClientRect().top;
+            const revealPoint = 150; // Reveal when section is 150px from bottom of viewport
+            
+            if (featuresTop < windowHeight - revealPoint) {
+                featuresSection.classList.add('reveal');
+            }
+        }
+        
+        // Add scroll event listener
+        window.addEventListener('scroll', revealOnScroll);
+        
+        // Check on page load in case user has scrolled
+        window.addEventListener('load', revealOnScroll);
+    </script>
+</body>
+</html>
